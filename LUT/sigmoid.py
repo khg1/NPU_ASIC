@@ -14,3 +14,11 @@ os.makedirs("lut", exist_ok=True)
 with open("./lut/sigmoid_q88.hex", "w") as f:
     for value in unsigned_lut:
         f.write(f"{value & 0xFFFF:04x}\n")
+
+# Synthesizable form: raw comma-separated array-literal entries, `include`-d
+# into an unpacked array initializer (e.g. `... = '{ `include "sigmoid_q88.svh" };`)
+# so the LUT content is a compile-time constant instead of a $readmemh file load.
+with open("./lut/sigmoid_q88.svh", "w") as f:
+    entries = [f"16'sh{value & 0xFFFF:04x}" for value in unsigned_lut]
+    f.write(",\n".join(entries))
+    f.write("\n")
